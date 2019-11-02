@@ -1,0 +1,1 @@
+fonte gyrocamera: https://gist.github.com/kormyen/a1e3c144a30fc26393f14f09989f03e1#file-gyrocamera-cs
