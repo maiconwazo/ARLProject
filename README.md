@@ -12,7 +12,7 @@ Desenvolvimento TCC 2019/2
 - Selecione a opção `Import .JAR/.AAR Package`;
 - No campo de arquivo selecione o .aar gerado anteriormente (geralmente em `AndroidLayer\UnityLayer\build\outputs\aar\UnityLayer.aar`;
 - Dê um nome ou deixe o nome padrão para o subprojeto;
-- Registre a biblioteca gerada e algumas referências do ARCore como dependência no arquivo `build.grandle` do aplicativo
+- Registre a biblioteca gerada e algumas referências do ARCore como dependência no arquivo `build.grandle` do aplicativo:
 
 ```
 dependencies {
@@ -26,7 +26,8 @@ dependencies {
 }
 ```
 
-- Configure a versão minima do android para a 24 e versão de compilação para última disponível
+- Cire uma pasta chamada `libs` dentro do diretório da aplicação e copie todos os arquivos da pasta `AndroidLayer/UnityLayer/libs/` para dentro dela;
+- Configure a versão minima do android para a 24 e versão de compilação para última disponível;
 - No arquivo `build.grandle` adicionar:
 
 ```
@@ -44,3 +45,20 @@ allprojects {
 - Rode o comando `Sync`
 
 ## Implementação
+- Após tudo estar configurado, o primeiro passo é criar uma classe para implementar a interface `IItem` e outra para `IRepository` retornando dentro do método `getItems(float latitude, float longitude)` os objetos próximos as coordenadas passadas por parâmetro;
+- Na classe `main_activity.java`, instancie o repositório desenvolvido no passo anterior;
+- Adicione um botão na tela inicial (no xml correspondente à `main_activity.java`);
+- Faça `binding` do botão dentro de uma variável;
+- Crie uma instância da classe ARLWorld passando como parâmetro o contexto atual, o botão de inicialização e o repositório instanciado.
+
+```
+    IRepository repositorio = new ConcreteRepository(); // instanciando repositório
+    Button btnCamera = (Button) findViewById(R.id.btnCamera); // binding do botão
+
+    ARLWorld arlWorld = new ARLWorld(this, btnCamera, repository); // instanciando a aplicação
+```
+
+- Faça build da aplicação e deploy no dispositivo móvel;
+- Clique no botão da tela inicial.
+
+A aplicação iniciará a execução chamando a cada 5 segundos o metódo para escanear os objetos próximos.
