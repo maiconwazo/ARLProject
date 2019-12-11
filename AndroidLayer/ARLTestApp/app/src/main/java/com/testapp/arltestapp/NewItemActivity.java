@@ -45,10 +45,10 @@ public class NewItemActivity extends Activity {
                     forma_value = R.raw.circle;
                     break;
                 case 2:
-                    forma_value = R.raw.cube;
+                    forma_value = R.raw.sofa;
                     break;
                 case 3:
-                    forma_value = R.raw.cylinder;
+                    forma_value = R.raw.tree;
                     break;
             }
 

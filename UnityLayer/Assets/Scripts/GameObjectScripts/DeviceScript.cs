@@ -1,5 +1,4 @@
-﻿using System.Threading;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.Android;
 using UnityEngine.UI;
 
@@ -15,7 +14,6 @@ public class DeviceScript : MonoBehaviour
 	private LocationService locationService;
 	private float nextTime = 0.0f;
 
-	public UIScript UiInstance;
 	public Text northRotationText;
 
 	void Start()
@@ -36,20 +34,21 @@ public class DeviceScript : MonoBehaviour
 		locationService = UnityEngine.Input.location;
 		locationService.Start(10, 0.01f);
 
-		new Thread(new ThreadStart(() =>
-		{
-			while (true)
-			{
-				lastLocationInformation = locationService.lastData;
-				Thread.Sleep(1000);
-			}
-		})).Start();
+		nextTime = Time.time;
 	}
 
 	void Update()
 	{
 		lastNorth = compassService.magneticHeading;
-				
+
+		if (nextTime < Time.time)
+		{
+			if (locationService.status == LocationServiceStatus.Running)
+				lastLocationInformation = locationService.lastData;
+
+			nextTime = Time.time + 1f;
+		}
+
 		if (mainCamera.transform.rotation.eulerAngles.x > 180)
 		{
 			lastNorth += 180;
@@ -61,18 +60,14 @@ public class DeviceScript : MonoBehaviour
 		#region Calibragem
 		if (!northCalibrated)
 		{
-			UiInstance.AddLog($"Calibrating north...");
-			UiInstance.AddLog($"Camera global rotation: {mainCamera.transform.rotation.eulerAngles.y}");
-			UiInstance.AddLog($"Last north: {lastNorth}");
-
 			transform.rotation = Quaternion.AngleAxis(lastNorth, Vector3.up);
 			mainCamera.transform.localRotation = Quaternion.Euler(mainCamera.transform.localRotation.eulerAngles.x, 0f, mainCamera.transform.localRotation.eulerAngles.z);
 
-			UiInstance.AddLog($"New camera local rotation: {mainCamera.transform.localRotation.eulerAngles}");
+			UIScript.AddLog($"New camera local rotation: {mainCamera.transform.localRotation.eulerAngles}");
 			northCalibrated = lastNorth > 0;
 		}
 
-		northRotationText.text = $"Last north: {lastNorth}º \nCamera rotation: {mainCamera.transform.rotation.eulerAngles}";
+		northRotationText.text = $"Last north: {lastNorth}º \nLast coords: ({lastLocationInformation.latitude}, {lastLocationInformation.longitude})\nCamera rotation: {mainCamera.transform.rotation.eulerAngles}";
 		#endregion
 	}
 

@@ -209,13 +209,12 @@
     <Compile Include="Assets\Scripts\Functions.cs" />
     <Compile Include="Assets\Scripts\GameObjectScripts\BackButtonScript.cs" />
     <Compile Include="Assets\Scripts\GameObjectScripts\DeviceScript.cs" />
-    <Compile Include="Assets\Scripts\GameObjectScripts\GyroScript.cs" />
     <Compile Include="Assets\Scripts\GameObjectScripts\ItemScript.cs" />
+    <Compile Include="Assets\Scripts\GameObjectScripts\UIScript.cs" />
     <Compile Include="Assets\Scripts\GameObjectScripts\WorldScript.cs" />
     <Compile Include="Assets\Scripts\ItemInfo.cs" />
     <Compile Include="Assets\Scripts\JsonHelper.cs" />
     <Compile Include="Assets\Scripts\MeshBuilder.cs" />
-    <Compile Include="Assets\UIScript.cs" />
     <None Include="Assets\GoogleARCore\SDK\Materials\ARBackground.shader" />
     <Reference Include="Unity.TextMeshPro.Editor">
       <HintPath>D:/Projetos/ARLProject/UnityLayer/Library/ScriptAssemblies/Unity.TextMeshPro.Editor.dll</HintPath>

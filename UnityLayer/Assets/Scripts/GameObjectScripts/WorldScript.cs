@@ -8,11 +8,12 @@ using UnityEngine;
 public class WorldScript : MonoBehaviour
 {
 	private static WorldScript instance;
-
-	private float rangeToTrack;
 	private Dictionary<string, ItemInfo> nearItems;
 	private bool isRunningItemSerch;
 	private object nearItemsLock = new object();
+	private bool debugMode;
+	private List<GameObject> listaObjetos;
+	private bool listarObjetos;
 
 	public DeviceScript DeviceInstance;
 	public UIScript UiInstance;
@@ -22,36 +23,39 @@ public class WorldScript : MonoBehaviour
 	void Start()
 	{
 		instance = this;
-		rangeToTrack = 1f;
 		isRunningItemSerch = false;
+		debugMode = false;
+		listaObjetos = new List<GameObject>();
+		listarObjetos = false;
 	}
 
-	private IEnumerator FetchNearItems(Dictionary<string, ItemInfo> foundItems)
+	public void RemoverItem(string id)
+	{
+		nearItems.Remove(id);
+	}
+
+	private IEnumerator FetchNearItems()
 	{
 		isRunningItemSerch = true;
+		nearItems = new Dictionary<string, ItemInfo>();
 		while (true)
 		{
-			var items = AndroidMethods.GetNearItems(DeviceInstance.LastLatitude(), DeviceInstance.LastLongitude(), UiInstance);
+			var items = AndroidMethods.GetNearItems(DeviceInstance.LastLatitude(), DeviceInstance.LastLongitude());
 
 			foreach (ItemInfo item in items)
 			{
-				UiInstance.AddLog($"Received:");
-				UiInstance.AddLog($"	Id: {item.Id}");
-				UiInstance.AddLog($"	Latitude: {item.Latitude}");
-				UiInstance.AddLog($"	Longitude: {item.Longitude}");
-				UiInstance.AddLog($"	Placed: {item.Placed}");
-
 				lock (nearItemsLock)
 				{
 					try
 					{
-						if (!foundItems.ContainsKey(item.Id))
+						if (!nearItems.ContainsKey(item.Id))
 						{
-							foundItems.Add(item.Id, item);
+							nearItems.Add(item.Id, item);
 						}
-					} catch (Exception e)
+					}
+					catch (Exception e)
 					{
-						UiInstance.AddLog(e.Message);
+						UIScript.AddLog(e.Message);
 					}
 				}
 			}
@@ -69,8 +73,7 @@ public class WorldScript : MonoBehaviour
 
 		if (!isRunningItemSerch)
 		{
-			nearItems = new Dictionary<string, ItemInfo>();
-			StartCoroutine(FetchNearItems(nearItems));
+			StartCoroutine(FetchNearItems());
 		}
 
 		float latitude = DeviceInstance.LastLatitude();
@@ -84,31 +87,48 @@ public class WorldScript : MonoBehaviour
 
 		foreach (var itemInfo in items)
 		{
-			UiInstance.AddLog($"Placing item {itemInfo.Id}");
-			UiInstance.AddLog($"Data:");
-			UiInstance.AddLog($"		Id: {itemInfo.Id}");
-			UiInstance.AddLog($"		Latitude: {itemInfo.Latitude}");
-			UiInstance.AddLog($"		Longitude: {itemInfo.Longitude}");
-			UiInstance.AddLog($"Current Latitude: {latitude} - Current Longitude: {longitude}");
-
 			float relativeAngle = Functions.AngleBetween(latitude, longitude, itemInfo.Latitude, itemInfo.Longitude);
 			float distance = Functions.HaversineDistance(latitude, longitude, itemInfo.Latitude, itemInfo.Longitude);
 			var position = Quaternion.AngleAxis(relativeAngle, Vector3.up) * Vector3.forward * distance;
 
-			UiInstance.AddLog($"Calculated position {position}");
+			UIScript.AddLog($"{itemInfo.Id} - {distance}m");
+			UIScript.AddLog($"{itemInfo.Id} - {relativeAngle}º");
+			UIScript.AddLog($"{itemInfo.Id} - Coords: ({itemInfo.Latitude}, {itemInfo.Longitude})");
 
-			Pose pose = new Pose(position, Quaternion.identity);
-			Anchor anchor = Session.CreateAnchor(pose);
+			//Pose pose = new Pose(position, Quaternion.identity);
+			//Anchor anchor = Session.CreateAnchor(pose);
 
 			var newItem = Instantiate(DefaultItemModel);
 			newItem.transform.position = position;
 			newItem.transform.rotation = Quaternion.identity;
-			newItem.transform.parent = anchor.transform ;
+			//newItem.transform.parent = anchor.transform;
+			listaObjetos.Add(newItem);
 
 			var itemScript = newItem.AddComponent<ItemScript>();
 
 			itemScript.PlaceItem(itemInfo, position);
 			itemInfo.Placed = true;
+		}
+
+		if (listarObjetos)
+		{
+			listarObjetos = false;
+			UIScript.AddLog($"Quantidade de itens: {listaObjetos.Count}");
+
+			foreach (GameObject o in listaObjetos)
+			{
+				var script = o.GetComponent<ItemScript>();
+
+
+				if (o != null)
+				{
+					UIScript.AddLog($"{script.ItemInfo.Id} - {o.transform.position} - Lat: {script.ItemInfo.Latitude} Long: {script.ItemInfo.Longitude}");
+				}
+				else
+				{
+					UIScript.AddLog("nulo");
+				}
+			}
 		}
 	}
 
@@ -117,8 +137,23 @@ public class WorldScript : MonoBehaviour
 		return instance;
 	}
 
-	public float RangeToTrack()
+	public bool IsDebugMode()
 	{
-		return rangeToTrack;
+		return debugMode;
+	}
+
+	public void AlterDebugMode()
+	{
+		debugMode = !debugMode;
+
+		if (debugMode)
+		{
+			listarObjetos = true;
+		}
+	}
+
+	public void RemoverObjeto(GameObject obj)
+	{
+		listaObjetos.Remove(obj);
 	}
 }

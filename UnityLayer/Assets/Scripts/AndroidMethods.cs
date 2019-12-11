@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class AndroidMethods
 {
-	internal static List<ItemInfo> GetNearItems(float latitude, float longitude, UIScript log)
+	public static List<ItemInfo> GetNearItems(float latitude, float longitude)
 	{
 		ItemInfo[] itemInfoArray = null;
 
@@ -12,12 +12,12 @@ public class AndroidMethods
 		{
 			var arlWorld = new AndroidJavaClass("com.FURB.ARLibrary.lib.ARLWorld");
 			var arlWorldInstance = arlWorld.CallStatic<AndroidJavaObject>("getARLWorldIntance");
-			var json = arlWorldInstance.Call<string>("getNearItems");
+			var json = arlWorldInstance.Call<string>("getNearItems", latitude, longitude);
 			itemInfoArray = JsonHelper.FromJson<ItemInfo>(json);
 		}
-		catch (Exception e)
+		catch
 		{
-			log.AddLog("Erro: " + e.Message);
+			itemInfoArray = new ItemInfo[] { new ItemInfo(new Guid().ToString(), DeviceScript.Instance().LastLatitude(), DeviceScript.Instance().LastLongitude(), "") };
 		}
 
 		var items = new List<ItemInfo>();
@@ -27,9 +27,5 @@ public class AndroidMethods
 		}
 
 		return items;
-	}
-
-	internal static void AddMessage(string message)
-	{
 	}
 }

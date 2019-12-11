@@ -17,6 +17,10 @@ public class ItemsRepository implements IRepository {
         return itemList;
     }
 
+    public List<IItem> getItems(float latitude, float longitude)    {
+        return itemList;
+    }
+
     public static ItemsRepository GetInstance()    {
         return instance;
     }

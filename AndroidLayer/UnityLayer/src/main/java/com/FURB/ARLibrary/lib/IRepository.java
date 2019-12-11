@@ -3,5 +3,5 @@ package com.FURB.ARLibrary.lib;
 import java.util.List;
 
 public interface IRepository {
-    List<IItem> getItems();
+    List<IItem> getItems(float latitude, float longitude);
 }

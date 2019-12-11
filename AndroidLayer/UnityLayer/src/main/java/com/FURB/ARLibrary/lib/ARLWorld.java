@@ -14,7 +14,6 @@ import com.FURB.ARLibrary.UnityPlayerActivity;
 import java.util.List;
 
 public class ARLWorld {
-    private static final int MY_PERMISSION_ACCESS_COARSE_LOCATION = 11;
     private static ARLWorld instance;
     private IRepository repository;
 
@@ -26,10 +25,16 @@ public class ARLWorld {
             activity.startActivity(unityIntent);
         });
 
+        if (ContextCompat.checkSelfPermission( activity, Manifest.permission.ACCESS_FINE_LOCATION ) != PackageManager.PERMISSION_GRANTED ) {
+
+            ActivityCompat.requestPermissions( activity, new String[] {  Manifest.permission.ACCESS_FINE_LOCATION  },
+                    102 );
+        }
+
         if (ContextCompat.checkSelfPermission( activity, android.Manifest.permission.ACCESS_COARSE_LOCATION ) != PackageManager.PERMISSION_GRANTED ) {
 
             ActivityCompat.requestPermissions( activity, new String[] {  Manifest.permission.ACCESS_COARSE_LOCATION  },
-                    MY_PERMISSION_ACCESS_COARSE_LOCATION );
+                    101 );
         }
 
         if (ContextCompat.checkSelfPermission( activity, Manifest.permission.CAMERA ) != PackageManager.PERMISSION_GRANTED ) {
@@ -43,9 +48,9 @@ public class ARLWorld {
         return instance;
     }
 
-    public String getNearItems(){
+    public String getNearItems(float latitude, float longitude){
         String retorno = "";
-        List<IItem> itemList = repository.getItems();
+        List<IItem> itemList = repository.getItems(latitude, longitude);
 
         for (IItem item : itemList) {
             if (!retorno.isEmpty())

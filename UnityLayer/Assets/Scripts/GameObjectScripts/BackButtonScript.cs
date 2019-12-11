@@ -16,8 +16,7 @@ public class BackButtonScript : MonoBehaviour
 			Destroy(gameObject);
 		}
 	}
-
-	// Update is called once per frame
+	
 	public void Back()
 	{
 		if (Application.platform == RuntimePlatform.Android)

@@ -1,13 +1,10 @@
 package com.testapp.arltestapp;
 
-import android.Manifest;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.widget.Button;
-
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
+import android.widget.CheckBox;
 
 import com.FURB.ARLibrary.lib.ARLWorld;
 
@@ -18,10 +15,6 @@ public class MainActivity extends Activity {
         setContentView(R.layout.main_activity);
 
         ItemsRepository repository = new ItemsRepository(); // repositório implementado
-
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != 0) {
-            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.CAMERA}, 100);
-        }
 
         // binding de botões
         Button btnCamera = (Button) findViewById(R.id.btnCamera);

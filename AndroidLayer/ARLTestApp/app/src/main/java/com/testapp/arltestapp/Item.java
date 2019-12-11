@@ -18,22 +18,18 @@ public class Item implements IItem {
         this.longitude = longitude;
         this.wavefrontFile = wavefrontFile;
     }
-
     @Override
     public UUID getId() {
         return id;
     }
-
     @Override
     public float getLatitude() {
         return latitude;
     }
-
     @Override
     public float getLongigute() {
         return longitude;
     }
-
     @Override
     public String getWavefrontFile() { return wavefrontFile; }
 }
