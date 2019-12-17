@@ -1,0 +1,2 @@
+include ':app', ':UnityLayer'
+rootProject.name='ARLTestApp'
